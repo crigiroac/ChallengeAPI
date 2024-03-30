@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChallengeAPI.Kafka\ChallengeAPI.Kafka.csproj" />
+    <ProjectReference Include="..\ChallengeN5.Elasticsearch\ChallengeAPI.Elasticsearch.csproj" />
+    <ProjectReference Include="..\ChallengeN5.BusinessObjects\ChallengeAPI.BusinessObjects.csproj" />
+    <ProjectReference Include="..\ChallengeN5.DTOs\ChallengeAPI.DTOs.csproj" />
+    <ProjectReference Include="..\ChallengeN5.Elasticsearch\ChallengeAPI.Elasticsearch.csproj" />
+  </ItemGroup>
+
+</Project>

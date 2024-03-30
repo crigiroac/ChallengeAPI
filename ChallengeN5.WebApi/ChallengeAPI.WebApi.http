@@ -1,0 +1,6 @@
+@ChallengeAPI.WebApi_HostAddress = http://localhost:5210
+
+GET {{ChallengeAPI.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
