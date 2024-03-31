@@ -1,8 +1,11 @@
-﻿using ChallengeAPI.BusinessObjects.IRepository;
+﻿using ChallengeAPI.BusinessObjects.Entities;
+using ChallengeAPI.BusinessObjects.IRepository;
+using ChallengeAPI.BusinessObjects.IServices;
 using ChallengeAPI.DTOs.Requests;
 using ChallengeAPI.DTOs.Responses;
 using ChallengeAPI.Kafka;
 using ChallengeAPI.UseCases.Common;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace ChallengeAPI.UseCases.Cases.PermissionCases
@@ -10,7 +13,8 @@ namespace ChallengeAPI.UseCases.Cases.PermissionCases
     internal class GetAllPermissionInteractor(
         IPermissionRepository permissionRepository,
         IOutputPort<IEnumerable<GetPermissionResponse>> outputPort,
-        KafkaService kafkaService
+        IKafkaService kafkaService,
+        IConfiguration configuration
         ) : IInputPort<IGetAllPermissionRequest>
     {
         
@@ -26,12 +30,13 @@ namespace ChallengeAPI.UseCases.Cases.PermissionCases
 
             await outputPort.Handle(permissions);
 
-            CreateKafkaRequest createKafkaRequest = new()
+           
+            await kafkaService.ProducerKafkaAsync(new EventProducerKafka()
             {
                 OperationName = "get",
                 OperationMessague = request
-            };
-            await kafkaService.GetBuilder(createKafkaRequest.Id.ToString(), JsonSerializer.Serialize(createKafkaRequest));
+            },
+            configuration["Kafka:GetTopic"]);
         }
     }
 }

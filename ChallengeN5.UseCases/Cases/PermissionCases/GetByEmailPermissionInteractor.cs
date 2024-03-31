@@ -1,24 +1,23 @@
-﻿using ChallengeAPI.BusinessObjects.IRepository;
+﻿using ChallengeAPI.BusinessObjects.Entities;
+using ChallengeAPI.BusinessObjects.IServices;
 using ChallengeAPI.DTOs.Requests;
 using ChallengeAPI.DTOs.Responses;
-using ChallengeAPI.Elasticsearch;
-using ChallengeAPI.Kafka;
 using ChallengeAPI.UseCases.Common;
-using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace ChallengeAPI.UseCases.Cases.PermissionCases
 {
-    internal class GetByEmailPermissionInteractor(IPermissionRepository permissionRepository,
-        IOutputPort<IEnumerable<GetByEmailElasticResponse>> outputPort,
-        KafkaService kafkaService, 
-        ElasticsearchService elasticsearchService
+    internal class GetByEmailPermissionInteractor(
+        //IPermissionRepository permissionRepository,
+        IOutputPort<IEnumerable<PermissionElasticResponse>> outputPort,
+        IKafkaService kafkaService,
+        IConfiguration configuration,
+        IElasticsearchService elasticsearchService
         ) : IInputPort<GetByEmailPermissionRequest>
     {
         public async Task Handle(GetByEmailPermissionRequest request)
         {
-
-            var permissions = elasticsearchService.GetByEmailDataAsync(request).Result;
-
+            var permissions = await elasticsearchService.GetByEmailDataAsync(request.Email);
 
             //var permissions = permissionRepository.GetByEmailPermissionsDetail(request.Email)
             //    .Select(e => new GetPermissionResponse()
@@ -29,14 +28,20 @@ namespace ChallengeAPI.UseCases.Cases.PermissionCases
             //        Enable = e.Enable
             //    });
 
-            await outputPort.Handle(permissions);
-
-            CreateKafkaRequest createKafkaRequest = new()
-            {
+            
+            await kafkaService.ProducerKafkaAsync(new EventProducerKafka(){
                 OperationName = "get",
-                OperationMessague = request
-            };
-            await kafkaService.GetBuilder(createKafkaRequest.Id.ToString(), JsonSerializer.Serialize(createKafkaRequest));
+                OperationMessague = request},
+             configuration["Kafka:GetTopic"]);
+
+
+            await outputPort.Handle(permissions.Select(e=> new PermissionElasticResponse() { 
+                Id = e.Id,
+                Email= e.Email,
+                Enable = e.Enable,
+                PermissionTypeName = e.PermissionTypeName
+            } ));
+
 
         }
     }

@@ -17,7 +17,7 @@ namespace ChallengeAPI.Presenters
             services.AddScoped<IOutputPort<CreatePermissionResponse>, CreatePermissionPresenter>();
             services.AddScoped<IOutputPort<IEnumerable<GetPermissionResponse>>, GetAllPermissionPresenter>();
             services.AddScoped<IOutputPort<IEnumerable<GetPermissionResponse>>, GetByEmailPermissionPresenter>();
-            services.AddScoped<IOutputPort<IEnumerable<GetByEmailElasticResponse>>, GetByEmailPermissionElasticPresenter>();
+            services.AddScoped<IOutputPort<IEnumerable<PermissionElasticResponse>>, GetByEmailPermissionElasticPresenter>();
 
             return services;
         }

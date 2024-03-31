@@ -1,14 +1,14 @@
-﻿using ChallengeAPI.DTOs.Requests;
+﻿using ChallengeAPI.BusinessObjects.Entities;
+using ChallengeAPI.BusinessObjects.IServices;
+using ChallengeAPI.DTOs.Requests;
 using ChallengeAPI.DTOs.Responses;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using Microsoft.Extensions.Configuration;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ChallengeAPI.Elasticsearch
 {
-    public class ElasticsearchService
+    public class ElasticsearchService : IElasticsearchService
     {
         private readonly ElasticsearchClient _client;
 
@@ -17,13 +17,12 @@ namespace ChallengeAPI.Elasticsearch
             var settings = new ElasticsearchClientSettings(new Uri(configuration["ElasticsearchService:Server"].ToString()))
             .CertificateFingerprint(configuration["ElasticsearchService:CertificateFingerprint"])
             .Authentication(new BasicAuthentication(configuration["ElasticsearchService:Authentication:User"], configuration["ElasticsearchService:Authentication:Password"]));
-
             _client = new ElasticsearchClient(settings);
         }
 
-        public async Task IndexDataFromSqlAsync(CreateElasticRequest permission)
+        public async Task IndexDataFromSqlAsync(PermissionElastic permissionElastic)
         {
-            var indexResponse = await _client.IndexAsync(permission, "challenge_n5"); // Indexar en Elasticsearch
+            var indexResponse = await _client.IndexAsync(permissionElastic, "challenge_n5"); // Indexar en Elasticsearch
             if (!indexResponse.IsValidResponse)
             {
                 // Manejar errores si la indexación falla
@@ -34,13 +33,13 @@ namespace ChallengeAPI.Elasticsearch
                 Console.WriteLine($"Index document with ID {indexResponse.Id} succeeded.");
             }
         }
-        public async Task UpdateDataAsync(UpdatePermisionRequest updatePermisionRequest)
+        public async Task UpdateDataAsync(PermissionElastic permissionElastic)
         {
 
-            var indexResponse = await _client.UpdateAsync<UpdatePermisionRequest, UpdatePermisionRequest>(
+            var indexResponse = await _client.UpdateAsync<PermissionElastic, PermissionElastic>(
                 "challenge_n5",
-                updatePermisionRequest.Id,
-                e => e.Doc(updatePermisionRequest)
+                permissionElastic.Id,
+                e => e.Doc(permissionElastic)
                 );
             if (!indexResponse.IsValidResponse)
             {
@@ -52,9 +51,9 @@ namespace ChallengeAPI.Elasticsearch
                 Console.WriteLine($"Index document with ID {indexResponse.Id} succeeded.");
             }
         }
-        public async Task<IEnumerable<GetByEmailElasticResponse>> GetByEmailDataAsync(GetByEmailPermissionRequest request)
+        public async Task<IEnumerable<PermissionElastic>> GetByEmailDataAsync(string email)
         {
-            IEnumerable<GetByEmailElasticResponse> result = null;
+            IEnumerable<PermissionElastic> result = null;
 
 
             //var requestElastic = new SearchRequest("challenge_n5")
@@ -65,7 +64,7 @@ namespace ChallengeAPI.Elasticsearch
             //};
             //var indexResponse = await _client.SearchAsync<GetByEmailElasticResponse>(requestElastic);
 
-            var indexResponse = await _client.SearchAsync<GetByEmailElasticResponse>(
+            var indexResponse = await _client.SearchAsync<PermissionElastic>(
                 e => e
                     .Index("challenge_n5")
                     .From(0)
@@ -73,14 +72,14 @@ namespace ChallengeAPI.Elasticsearch
                     .Query(q => q
                         .Match( m =>m
                             .Field(f => f.Email)
-                            .Query(request.Email)
+                            .Query(email)
                         //.Term(t => t.Email, request.Email)
                         )
                 ));
 
             if (indexResponse.IsValidResponse)
             {
-                result = (IEnumerable<GetByEmailElasticResponse>) indexResponse.Documents;
+                result = (IEnumerable<PermissionElastic>) indexResponse.Documents;
             }
 
             return result;

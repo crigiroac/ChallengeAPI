@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChallengeAPI.Controllers.Permission
 {
     public class GetByEmailPermissionController (IInputPort<GetByEmailPermissionRequest> inputPort,
-        IOutputPort<IEnumerable<GetByEmailElasticResponse>> outputPort): ApiControllerBase
+        IOutputPort<IEnumerable<PermissionElasticResponse>> outputPort): ApiControllerBase
     {
         [HttpGet]
-        public async Task<IEnumerable<GetByEmailElasticResponse>> GetByEmailPermission(GetByEmailPermissionRequest request)
+        public async Task<IEnumerable<PermissionElasticResponse>> GetByEmailPermission(GetByEmailPermissionRequest request)
         {
             await inputPort.Handle(request);
-            return ((IPresenter<IEnumerable<GetByEmailElasticResponse>>)outputPort).Content;
+            return ((IPresenter<IEnumerable<PermissionElasticResponse>>)outputPort).Content;
         }
     }
 }

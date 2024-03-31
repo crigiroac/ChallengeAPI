@@ -1,10 +1,10 @@
 ﻿using ChallengeAPI.BusinessObjects.Entities;
 using ChallengeAPI.BusinessObjects.IRepository;
+using ChallengeAPI.BusinessObjects.IServices;
 using ChallengeAPI.DTOs.Requests;
 using ChallengeAPI.DTOs.Responses;
-using ChallengeAPI.Elasticsearch;
-using ChallengeAPI.Kafka;
 using ChallengeAPI.UseCases.Common;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace ChallengeAPI.UseCases.Cases.PermissionCases
@@ -14,10 +14,10 @@ namespace ChallengeAPI.UseCases.Cases.PermissionCases
         IUnitOfWork unitOfWork,
         IEmployeeRepository employeeRepository,
         IPermissionTypeRepository permissionTypeRepository,
-        ElasticsearchService elasticsearchService,
-        KafkaService kafkaService
-
-        ) : IInputPort<CreatePermissionRequest>
+        IElasticsearchService elasticsearchService,
+        IKafkaService kafkaService,
+        IConfiguration configuration
+           ) : IInputPort<CreatePermissionRequest>
     {
         public async Task Handle(CreatePermissionRequest request)
         {
@@ -38,22 +38,20 @@ namespace ChallengeAPI.UseCases.Cases.PermissionCases
 
             permissionRepository.Add(newPermission);
 
-            await unitOfWork.SaveChanges();
-
-            await elasticsearchService.IndexDataFromSqlAsync(new CreateElasticRequest() { 
+            await elasticsearchService.IndexDataFromSqlAsync(new PermissionElastic() { 
                 Id = newPermission.Id,
                 Email = newPermission.Employee.Email,
                 PermissionTypeName = newPermission.PermissionType.PermissionTypeName,
                 Enable =newPermission.Enable
             });
 
-            CreateKafkaRequest createKafkaRequest = new()
-            {
-                OperationName = "request",
-                OperationMessague = request
-            };
+            await unitOfWork.SaveChanges();
 
-            await kafkaService.ProducerBuilder(createKafkaRequest.Id.ToString(), JsonSerializer.Serialize(createKafkaRequest));
+            await kafkaService.ProducerKafkaAsync(new EventProducerKafka(){
+                    OperationName= "request",
+                    OperationMessague = request}, 
+                configuration["Kafka:CreateTopic"]);
+            
 
             await outputPort.Handle(new()
             {

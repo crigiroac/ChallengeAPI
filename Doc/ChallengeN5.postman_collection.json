@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "fffdad3a-6cfa-4121-9511-cc2785fc5648",
+		"name": "ChallengeN5",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "679337"
+	},
+	"item": [
+		{
+			"name": "Permission",
+			"item": [
+				{
+					"name": "CreatePermission",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"algo@algo.com\",\r\n  \"permissionTypeName\": \"Update\",\r\n  \"enable\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/CreatePermission",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"CreatePermission"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllPermission",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/GetAllPermission",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"GetAllPermission"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByEmailPermission",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"algo@algo.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/GetByEmailPermission",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"GetByEmailPermission"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdatePermission",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"algo@algo.com\",\r\n  \"permissionTypeName\": \"Delete\",\r\n  \"enable\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44367/api/UpdatePermission",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44367",
+							"path": [
+								"api",
+								"UpdatePermission"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employee",
+			"item": [
+				{
+					"name": "CreateEmployee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"string\",\r\n  \"lastName\": \"string\",\r\n  \"phoneNumber\": \"string\",\r\n  \"email\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/GetAllPermission",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"GetAllPermission"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

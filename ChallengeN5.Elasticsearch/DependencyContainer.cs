@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ChallengeAPI.BusinessObjects.IServices;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ChallengeAPI.Elasticsearch
@@ -8,7 +9,7 @@ namespace ChallengeAPI.Elasticsearch
         public static IServiceCollection AddRepositoriesElasticsearch (this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddScoped<ElasticsearchService>();
+            services.AddScoped<IElasticsearchService, ElasticsearchService>();
 
             return services;
         }
