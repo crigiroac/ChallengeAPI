@@ -70,10 +70,9 @@ namespace ChallengeAPI.Elasticsearch
                     .From(0)
                     .Size(20)
                     .Query(q => q
-                        .Match( m =>m
-                            .Field(f => f.Email)
+                        .MatchPhrase( m =>m
+                            .Field(f => f.Email.Suffix("keyword"))
                             .Query(email)
-                        //.Term(t => t.Email, request.Email)
                         )
                 ));
 

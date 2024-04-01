@@ -1,4 +1,5 @@
 using ChallengeAPI.IoC;
+using ChallengeAPI.LogService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 
 //Add Services 
 builder.Services.AddChallengeDependencies(builder.Configuration);
+
+builder.AddSerilog();
 
 var app = builder.Build();
 
